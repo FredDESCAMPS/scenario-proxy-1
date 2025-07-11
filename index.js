@@ -11,16 +11,17 @@ app.use(express.json());
 
 app.post('/proxy', async (req, res) => {
   try {
-    const apiKey = process.env.SCENARIO_API_KEY;
+    const creds = Buffer.from(
+      `${process.env.SCENARIO_API_KEY}:${process.env.SCENARIO_API_SECRET}`
+    ).toString('base64');
 
     const headers = {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`
+      'Authorization': `Basic ${creds}`
     };
 
-    console.log("🔐 Clé API utilisée:", apiKey);
-    console.log("🔍 Header Authorization envoyé:", headers.Authorization);
-    console.log("📦 Corps de la requête:", req.body);
+    console.log("🔐 Authorization header:", headers.Authorization);
+    console.log("📦 Request body:", req.body);
 
     const response = await axios.post(
       'https://api.cloud.scenario.com/v1/generation',
@@ -29,15 +30,13 @@ app.post('/proxy', async (req, res) => {
     );
 
     res.status(response.status).json(response.data);
-  } catch (error) {
-    console.error("❌ Erreur proxy :", error.response?.data || error.message);
+  } catch (err) {
+    console.error("❌ Proxy error:", err.response?.data || err.message);
     res.status(500).json({
-      error: 'Erreur lors de la requête vers l\'API Scenario',
-      details: error.response?.data || error.message
+      error: 'Erreur proxy Scenario',
+      details: err.response?.data || err.message
     });
   }
 });
 
-app.listen(port, () => {
-  console.log("✅ Proxy actif sur le port " + port);
-});
+app.listen(port, () => console.log(`✅ Proxy listening on port ${port}`));
