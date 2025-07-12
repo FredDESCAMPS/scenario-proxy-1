@@ -2,8 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 require('dotenv').config();
-const app = express();
 
+const app = express();
 const port = process.env.PORT || 8080;
 
 app.use(cors());
@@ -18,13 +18,13 @@ app.post('/proxy', async (req, res) => {
       return res.status(400).json({ error: 'API Key or Secret missing' });
     }
 
+    // 👇 Encodage correct pour Basic Auth
     const credentials = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
+
     const headers = {
       'Content-Type': 'application/json',
-      'Authorization': `Basic ${credentials}`
+      'Authorization': `Basic ${credentials}` // ✅ C'est ce que Scenario attend
     };
-
-    console.log("✅ Auth header:", headers.Authorization);
 
     const response = await axios.post(
       'https://api.cloud.scenario.com/v1/generation',
