@@ -18,12 +18,11 @@ app.post('/proxy', async (req, res) => {
       return res.status(400).json({ error: 'API Key or Secret missing' });
     }
 
-    // 👇 Encodage correct pour Basic Auth
     const credentials = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
 
     const headers = {
       'Content-Type': 'application/json',
-      'Authorization': `Basic ${credentials}` // ✅ C'est ce que Scenario attend
+      'Authorization': `Basic ${credentials}`
     };
 
     const response = await axios.post(
