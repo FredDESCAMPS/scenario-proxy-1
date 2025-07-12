@@ -1,32 +1,29 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = 8080; // Port Railway ou local
 
 app.use(cors());
 app.use(express.json());
 
+// ⚠️ Mets ici ta vraie API KEY et SECRET
+const apiKey = 'api_yi6vWTk8pk5wbuhHvzwQApXC';
+const apiSecret = 'Qr3oCfUVtcW3S8WnSCNaQzM9';
+
+// Création du header d’authentification en Basic Auth (clé:secret en base64)
+const authHeader = 'Basic ' + Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
+
 app.post('/proxy', async (req, res) => {
   try {
-    const apiKey = process.env.SCENARIO_API_KEY;
-    const apiSecret = process.env.SCENARIO_API_SECRET;
-
-    if (!apiKey || !apiSecret) {
-      return res.status(400).json({ error: 'API Key or Secret missing' });
-    }
-
-    const credentials = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
-
     const headers = {
       'Content-Type': 'application/json',
-      'Authorization': `Basic ${credentials}`
+      'Authorization': authHeader
     };
-    console.log("Clé API utilisée:", apiKey);
-    console.log("Secret utilisé (masqué):", apiSecret.slice(0, 3) + '...');
-    console.log("Corps de la requête:", req.body);
+
+    console.log("🔐 Header Authorization:", headers.Authorization);
+    console.log("📦 Corps de la requête:", req.body);
 
     const response = await axios.post(
       'https://api.cloud.scenario.com/v1/generation',
@@ -38,7 +35,7 @@ app.post('/proxy', async (req, res) => {
   } catch (error) {
     console.error("❌ Erreur proxy :", error.response?.data || error.message);
     res.status(500).json({
-      error: "Erreur lors de la requête vers l'API Scenario",
+      error: 'Erreur lors de la requête vers l\'API Scenario',
       details: error.response?.data || error.message
     });
   }
