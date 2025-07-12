@@ -1,8 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-const base64 = require('base-64');
-const baseUrl = 'https://api.cloud.scenario.com/v1';
 
 const app = express();
 const port = process.env.PORT || 8080; // Port Railway ou local
