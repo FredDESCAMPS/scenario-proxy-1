@@ -2,8 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 require('dotenv').config();
-
 const app = express();
+
 const port = process.env.PORT || 8080;
 
 app.use(cors());
@@ -14,18 +14,20 @@ app.post('/proxy', async (req, res) => {
     const apiKey = process.env.SCENARIO_API_KEY;
     const apiSecret = process.env.SCENARIO_API_SECRET;
 
-    const base64Credentials = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
+    if (!apiKey || !apiSecret) {
+      return res.status(400).json({ error: 'API Key or Secret missing' });
+    }
 
+    const credentials = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
     const headers = {
       'Content-Type': 'application/json',
-      'Authorization': `Basic ${base64Credentials}`
+      'Authorization': `Basic ${credentials}`
     };
 
-    console.log("🟢 Envoi vers Scenario API avec headers:", headers);
-    console.log("📦 Body:", req.body);
+    console.log("✅ Auth header:", headers.Authorization);
 
     const response = await axios.post(
-      'https://api.cloud.scenario.com/v1/generation', // ✅ C’est api.scenario.com (et non cloud.scenario.com)
+      'https://api.cloud.scenario.com/v1/generation',
       req.body,
       { headers }
     );
@@ -34,7 +36,7 @@ app.post('/proxy', async (req, res) => {
   } catch (error) {
     console.error("❌ Erreur proxy :", error.response?.data || error.message);
     res.status(500).json({
-      error: 'Erreur lors de la requête vers l\'API Scenario',
+      error: "Erreur lors de la requête vers l'API Scenario",
       details: error.response?.data || error.message
     });
   }
