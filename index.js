@@ -1,33 +1,35 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 8080; // Port Railway ou local
+const port = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(express.json());
 
-// ⚠️ Mets ici ta vraie API KEY et SECRET
-const apiKey = 'api_yi6vWTk8pk5wbuhHvzwQApXC';
-const apiSecret = 'Qr3oCfUVtcW3S8WnSCNaQzM9';
-
-// Création du header d’authentification en Basic Auth (clé:secret en base64)
-//const authHeader = 'Basic ' + Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
-const authHeader = 'Basic ' + base64.encode(`${key}:${secret}`);
-
 app.post('/proxy', async (req, res) => {
   try {
+    const key = process.env.SCENARIO_API_KEY;
+    const secret = process.env.SCENARIO_API_SECRET;
+
+    // ⚠️ CORRECTION ICI : Encodage base64 sans package externe
+    const credentials = Buffer.from(`${key}:${secret}`).toString('base64');
+    const authHeader = `Basic ${credentials}`;
+
     const headers = {
       'Content-Type': 'application/json',
       'Authorization': authHeader
     };
 
-    console.log("🔐 Header Authorization:", headers.Authorization);
+    console.log("🔐 Clé API utilisée:", key);
+    console.log("🔐 Secret utilisé:", secret);
+    console.log("🔍 Header Authorization envoyé:", headers.Authorization);
     console.log("📦 Corps de la requête:", req.body);
 
     const response = await axios.post(
-      'https://api.cloud.scenario.com/v1/generation,',
+      'https://api.scenario.com/v1/generation',
       req.body,
       { headers }
     );
@@ -43,5 +45,5 @@ app.post('/proxy', async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log("✅ Proxy actif sur le port " + port);
+  console.log(`✅ Proxy actif sur le port ${port}`);
 });
