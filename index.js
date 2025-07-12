@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-const fetch = require('node-fetch');
+
 const base64 = require('base-64');
 
 const app = express();
