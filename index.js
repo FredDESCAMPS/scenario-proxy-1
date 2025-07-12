@@ -25,7 +25,7 @@ app.post('/proxy', async (req, res) => {
     console.log("📦 Body:", req.body);
 
     const response = await axios.post(
-      'https://api.scenario.com/v1/generation', // ✅ C’est api.scenario.com (et non cloud.scenario.com)
+      'https://api.cloud.scenario.com/v1/generation', // ✅ C’est api.scenario.com (et non cloud.scenario.com)
       req.body,
       { headers }
     );
