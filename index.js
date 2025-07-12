@@ -13,7 +13,8 @@ const apiKey = 'api_yi6vWTk8pk5wbuhHvzwQApXC';
 const apiSecret = 'Qr3oCfUVtcW3S8WnSCNaQzM9';
 
 // Création du header d’authentification en Basic Auth (clé:secret en base64)
-const authHeader = 'Basic ' + Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
+//const authHeader = 'Basic ' + Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
+const authHeader = 'Basic ' + base64.encode(`${key}:${secret}`);
 
 app.post('/proxy', async (req, res) => {
   try {
