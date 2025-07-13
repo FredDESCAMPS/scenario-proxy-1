@@ -9,28 +9,32 @@ const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 
-app.get('/test-auth', async (req, res) => {
+app.post('/proxy', async (req, res) => {
   try {
-    const key = process.env.SCENARIO_API_KEY;
-    const secret = process.env.SCENARIO_API_SECRET;
+    const apiKey = process.env.SCENARIO_API_KEY;
+    const apiSecret = process.env.SCENARIO_API_SECRET;
 
-    if (!key || !secret) {
-      return res.status(500).json({ error: 'Clés API manquantes' });
-    }
+    // Encodage en Base64
+    const credentials = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Basic ${credentials}`,
+    };
 
-    const credentials = Buffer.from(`${key}:${secret}`).toString('base64');
+    console.log("🔐 Auth envoyé:", headers.Authorization);
+    console.log("📦 Payload:", req.body);
 
-    const response = await axios.get('https://api.cloud.scenario.com/v1/assets', {
-      headers: {
-        'Authorization': `Basic ${credentials}`
-      }
-    });
+    const response = await axios.post(
+      'https://api.cloud.scenario.com/v1/generation',
+      req.body,
+      { headers }
+    );
 
-    res.status(200).json(response.data);
+    res.status(response.status).json(response.data);
   } catch (error) {
-    console.error('❌ Erreur de test auth :', error.response?.data || error.message);
+    console.error("❌ Erreur proxy :", error.response?.data || error.message);
     res.status(500).json({
-      error: 'Erreur lors du test d’authentification',
+      error: "Erreur lors de la requête vers l'API Scenario",
       details: error.response?.data || error.message
     });
   }
