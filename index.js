@@ -10,21 +10,20 @@ app.use(express.json());
 
 app.post('/proxy', async (req, res) => {
   try {
-    const apiKey = process.env.SCENARIO_API_KEY;
-    const apiSecret = process.env.SCENARIO_API_SECRET;
-    const credentials = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Basic ${credentials}`
-    };
-    console.log('🔐 AUTH:', headers.Authorization);
-    console.log('📦 Payload:', req.body);
+    const key = process.env.SCENARIO_API_KEY;
+const secret = process.env.SCENARIO_API_SECRET;
+const credentials = Buffer.from(`${key}:${secret}`).toString('base64');
 
-    const response = await axios.post(
-      'https://api.scenario.com/v1/generation',
-      req.body,
-      { headers }
-    );
+const headers = {
+  'Content-Type': 'application/json',
+  'Authorization': `Basic ${credentials}`
+};
+
+const response = await axios.post(
+  'https://api.scenario.com/v1/generation',
+  req.body,
+  { headers }
+);
     res.status(response.status).json(response.data);
   } catch (error) {
     console.error('❌ Proxy error:', error.response?.data || error.message);
