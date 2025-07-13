@@ -12,21 +12,21 @@ app.use(express.json());
 
 app.post('/proxy', async (req, res) => {
   try {
-    const body = req.body;
-    const apiHost = 'api.cloud.scenario.com';
-    const apiPath = '/v1/generation';
-    const url = `https://${apiHost}${apiPath}`;
+    const body = JSON.stringify(req.body);
+    const host = 'api.cloud.scenario.com';
+    const path = '/v1/generation';
+    const url = `https://${host}${path}`;
 
     const opts = {
-      host: apiHost,
-      path: apiPath,
+      host,
+      path,
       method: 'POST',
       service: 'execute-api',
       region: 'us-east-1',
+      body,
       headers: {
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
+      }
     };
 
     aws4.sign(opts, {
@@ -34,7 +34,7 @@ app.post('/proxy', async (req, res) => {
       secretAccessKey: process.env.SCENARIO_API_SECRET
     });
 
-    const response = await axios.post(url, body, {
+    const response = await axios.post(url, req.body, {
       headers: opts.headers
     });
 
@@ -42,7 +42,7 @@ app.post('/proxy', async (req, res) => {
   } catch (error) {
     console.error("❌ Erreur proxy :", error.response?.data || error.message);
     res.status(500).json({
-      error: 'Erreur lors de la requête vers l\'API Scenario',
+      error: "Erreur lors de la requête vers l'API Scenario",
       details: error.response?.data || error.message
     });
   }
