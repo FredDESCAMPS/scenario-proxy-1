@@ -42,7 +42,7 @@ app.post('/proxy', async (req, res) => {
   } catch (error) {
     console.error("❌ Erreur proxy :", error.response?.data || error.message);
     res.status(500).json({
-      error: 'Erreur lors de la requête vers l'API Scenario',
+      error: 'Erreur lors de la requête vers l\'API Scenario',
       details: error.response?.data || error.message
     });
   }
