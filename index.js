@@ -14,15 +14,12 @@ app.post('/proxy', async (req, res) => {
     const apiKey = process.env.SCENARIO_API_KEY;
     const apiSecret = process.env.SCENARIO_API_SECRET;
 
-    // Encodage en Base64
+    // Correction AUTH Basic
     const credentials = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64');
     const headers = {
       'Content-Type': 'application/json',
-      'Authorization': `Basic ${credentials}`,
+      'Authorization': `Basic ${credentials}`
     };
-
-    console.log("🔐 Auth envoyé:", headers.Authorization);
-    console.log("📦 Payload:", req.body);
 
     const response = await axios.post(
       'https://api.cloud.scenario.com/v1/generation',
