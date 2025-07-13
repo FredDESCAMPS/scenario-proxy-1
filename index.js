@@ -20,7 +20,7 @@ app.get('/test-auth', async (req, res) => {
 
     const credentials = Buffer.from(`${key}:${secret}`).toString('base64');
 
-    const response = await axios.get('https://api.cloud.scenario.com/v1/user', {
+    const response = await axios.get('https://api.cloud.scenario.com/v1/assets', {
       headers: {
         'Authorization': `Basic ${credentials}`
       }
